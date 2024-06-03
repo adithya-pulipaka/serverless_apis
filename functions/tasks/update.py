@@ -24,10 +24,10 @@ def update(req: http.Request) -> http.Response:
         if not object_id:
             return http.Response(json.dumps({"errors": "TaskId doesn't exist"}), status=400, mimetype='application/json')
 
-        result: UpdateResult = coll.update_one({"_id": ObjectId(object_id)}, update={"description": payload["description"], "completed": payload["completed"]})
+        result: UpdateResult = coll.update_one({"_id": ObjectId(object_id)}, update={"$set": {"description": payload["description"], "completed": payload["completed"]}})
         if result.modified_count == 1:
-            return http.Response(status= 200)
+            return http.Response(json.dumps({"payload": "Updated Record"}), status= 200)
         else:
-            return http.Response(status= 500)
+            return http.Response(json.dumps({"errors": "Unable to update record"}), status= 500)
     except Exception as e:
         return http.Response(json.dumps({"errors": str(e)}), status=400)
