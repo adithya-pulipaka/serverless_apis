@@ -1,4 +1,5 @@
 import { budget_db } from "../setup/db.js";
+import { ObjectId } from "mongodb";
 
 // # Schema
 // # name: taskDetails.item,
@@ -30,7 +31,7 @@ export const add = async (req, res) => {
     if (!response.acknowledged) {
       res.status(500).json({ errors: "Insert Failed" });
     } else {
-      res.status(200).json({ payload: { ...body, id: response.insertedId } });
+      res.status(200).json({ payload: { ...payload } });
     }
   } catch (ex) {
     res.status(500).json({ errors: "Insert Failed" });
@@ -57,5 +58,58 @@ export const list = async (req, res) => {
     res.json({ payload: results });
   } catch (ex) {
     res.status(500).json({ errors: "unable to retrieve records" });
+  }
+};
+
+export const update = async (req, res) => {
+  try {
+    const coll = await getCollection();
+    const body = req.body;
+    const tranId = req.params.tranId;
+    if (!tranId) {
+      res.status(400).json({ errors: "TranId is mandatory" });
+    }
+    const payload = {
+      ...body,
+    };
+    const updateQuery = {
+      $set: {
+        description: payload["description"],
+        completed: payload["completed"] || false,
+        amount: payload["amount"],
+      },
+    };
+    const result = await coll.updateOne(
+      { _id: ObjectId.createFromHexString(tranId) },
+      updateQuery
+    );
+    console.log(result);
+    if (result.modifiedCount == 1) {
+      res.json({ payload: "Updated Record" });
+    } else {
+      res.status(500).json({ errors: "unable to update record" });
+    }
+  } catch (ex) {
+    res.status(500).json({ errors: "unable to update record" });
+  }
+};
+
+export const delT = async (req, res) => {
+  try {
+    const coll = await getCollection();
+    const tranId = req.params.tranId;
+    if (!tranId) {
+      res.status(400).json({ errors: "TranId is mandatory" });
+    }
+    const result = await coll.deleteOne({
+      _id: ObjectId.createFromHexString(tranId),
+    });
+    if (result.deletedCount == 0) {
+      res.status(400).json({ errors: "TranId doesnt exist" });
+    } else {
+      res.json({ payload: "Deleted Record" });
+    }
+  } catch (ex) {
+    res.status(500).json({ errors: "unable to delete record" });
   }
 };
