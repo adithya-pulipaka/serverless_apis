@@ -40,7 +40,7 @@ sdk default java 21.0.5-zulu
 ### 2. Start local MongoDB
 
 ```bash
-docker-compose up -d
+docker compose up -d
 ```
 
 This starts MongoDB 7 on `localhost:27017`. Data is persisted in a Docker volume (`mongo_data`).
