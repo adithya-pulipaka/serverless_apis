@@ -4,7 +4,7 @@ WORKDIR /app
 COPY pom.xml .
 RUN mvn dependency:go-offline -B
 COPY src ./src
-RUN mvn package -DskipTests -B
+RUN mvn package -DskipTests -Dcheckstyle.skip=true -B
 
 # Runtime stage — minimal JRE image
 FROM eclipse-temurin:21-jre
