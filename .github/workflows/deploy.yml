@@ -72,5 +72,5 @@ jobs:
             --min-instances 0 \
             --memory 512Mi \
             --cpu 1 \
-            --set-secrets MONGODB_URI=mongodb-uri:latest \
+            --set-secrets MONGODB_URI=mongodb-uri:latest,API_KEY=api-key:latest \
             --quiet
